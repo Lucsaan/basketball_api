@@ -1,0 +1,40 @@
+type User {
+    id: String
+    name: String!
+}
+
+type Game {
+    id: Int
+    gamers: String!
+    score: String!
+    archived: Boolean!
+    startTime: String!
+    endTime: String!
+    winner: String
+}
+
+type Query {
+    helloWorld: String!
+    users: [User]
+}
+
+type Mutation {
+    createUser (
+        name: String!
+    ): User
+}
+
+type Mutation {
+    createGame (
+        names: [String]
+    ): Game
+}
+
+type Mutation {
+    upScore(
+        name: String,
+        names: [String]
+    ): Int
+}
+
+
