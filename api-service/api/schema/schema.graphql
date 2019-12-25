@@ -1,40 +1,65 @@
 type User {
-    id: String
-    name: String!
+  id: String
+  name: String
+  games: [Game]
+  wins: [Game]
+
 }
 
 type Game {
-    id: Int
-    gamers: String!
-    score: String!
-    archived: Boolean!
-    startTime: String!
-    endTime: String!
-    winner: String
+  id: Int
+  gamersId: String!
+  players: [User]!
+  scores: [Score]!
+  archived: Boolean!
+  startTime: String!
+  endTime: String
+  winner: User
+}
+
+type Score {
+  id: Int!
+  user: User!
+  game: Game!
+  points: Int!
 }
 
 type Query {
-    helloWorld: String!
-    users: [User]
+  helloWorld: String!
+  users: [User]
+  games: [Game]
 }
 
 type Mutation {
-    createUser (
-        name: String!
-    ): User
+  createUser (
+    name: String!
+  ): User
 }
 
 type Mutation {
-    createGame (
-        names: [String]
-    ): Game
+  createGame (
+    userIds: [Int]!
+  ): Game
 }
 
 type Mutation {
-    upScore(
-        name: String,
-        names: [String]
-    ): Int
+  upScore(
+    userId: Int!
+    gameId: Int!
+  ): Game
+}
+
+type Mutation {
+  downScore(
+    userId: Int!
+    gameId: Int!
+  ): Game
+}
+
+type Mutation {
+  deleteGame(
+    gameId: Int!
+  ): Boolean!
 }
 
 

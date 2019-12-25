@@ -1,63 +1,54 @@
-import {Entity, Column, PrimaryGeneratedColumn, CreateDateColumn} from "typeorm";
-import {json} from "express";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+  Connection, ManyToOne
+} from "typeorm";
+import {User} from "./User";
+import {Score} from "./Score";
 
 @Entity()
 export class Game {
 
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column()
-    gamers!: string;
+  @Column()
+  gamersId!: string;
 
-    @Column()
-    score!: string;
+  @ManyToMany(type => User, user => user.games, {eager: true, cascade: true})
+  @JoinTable()
+  players!: User[];
 
-    @Column()
-    archived!: boolean;
+  @OneToMany(type => Score, score => score.game, {eager: true, cascade: true})
+  scores!: Score[];
 
-    @CreateDateColumn()
-    startTime!: Date;
+  @Column()
+  archived!: boolean;
 
-    @Column('datetime', {nullable: true})
-    endTime: Date | undefined;
+  @CreateDateColumn()
+  startTime!: Date;
 
-    @Column({nullable: true, type: 'varchar'})
-    winner: string | undefined;
+  @Column('datetime', {nullable: true})
+  endTime: Date | undefined;
 
-    createNewGame(names: Array<string>) {
-        console.log('names', names);
-        this.gamers = '';
-        this.gamers = Buffer.from(names.sort().join('')).toString('base64');
-        let score: any = {};
-        names.forEach(name => {
-            score[name] = 0;
-        });
-        this.score = JSON.stringify(score);
-        this.archived = false;
-        console.log('das ist die id', this.id);
-        console.log('das sind die gamers jetzt', this.gamers);
-    }
+  @ManyToOne(type => User, {eager: true, cascade: true, nullable: true})
+  @JoinTable()
+  winner: User | undefined;
 
-    upScore(name: string): boolean {
-        let score = JSON.parse(this.score);
-        score[name]++;
-        if (score[name] === 10) {
-           this.completeGame(name);
-            this.score = JSON.stringify(score);
-           return true;
-        }
-        this. score = JSON.stringify(score);
-        return false;
-    }
+  constructor() {
+    this.startTime = new Date(Date.now());
+    this.archived = false;
+    this.gamersId = '';
+  }
 
-    // downScore(name: string) {
-    //     this.score[name]--;
-    // }
-
-    private completeGame(name: string) {
-         this.archived = true;
-         this.endTime = new Date(Date.now());
-         this.winner = name;
-    }
+  public completeGame(user: User) {
+    this.archived = true;
+    this.endTime = new Date(Date.now());
+    this.winner = user;
+  }
 }
