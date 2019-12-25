@@ -67,7 +67,6 @@ const resolverMap: IResolvers = {
             const gamersId: any = Buffer.from(users.map((x: User) => x.name).join(', ')).toString('base64');
             let game = await gamesRepo.findOne({gamersId: gamersId, archived: false});
             if (!game) {
-              console.log('userlisle', users);
               let game = new Game();
               game.gamersId = gamersId;
               game.players = users;
@@ -76,7 +75,6 @@ const resolverMap: IResolvers = {
                 scores.push(new Score(user))
               });
               game.scores = scores;
-              // game.addPlayers(users, connection);
               await gamesRepo.save(game);
               console.log('New game saved');
               resolve(game);
@@ -97,16 +95,18 @@ const resolverMap: IResolvers = {
           }
           game.scores.forEach(async (score: Score) => {
             if (score.user.id === userId) {
-              if (score.points >= 10 && !game.archived) {
-                game.completeGame(score.user);
-                await gamesRepo.save(game);
-              } else if (score.points <= 10 && !game.archived){
+              if (score.points <= 10 && !game.archived) {
                 score.points++;
+                if (score.points == 10) {
+                  game.completeGame(score.user);
+                }
                 await gamesRepo.save(game);
+                resolve(game);
+              } else {
+                resolve(game);
               }
             }
           });
-          resolve(game);
         });
       });
     },
