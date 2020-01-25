@@ -47,7 +47,8 @@ const resolverMap: IResolvers = {
           if (!_user) {
             await userRepo.save(user);
             console.log('user saved');
-            resolve(user);
+            let users = await userRepo.find({relations: ['wins']});
+            resolve(users);
           } else {
             reject(new Error('name in use, choose another!'));
           }
