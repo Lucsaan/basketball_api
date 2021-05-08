@@ -36,6 +36,6 @@
     "mysql": "^2.16.0",
     "ncp": "^2.0.0",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.16"
+    "typeorm": "^0.2.25"
   }
 }
